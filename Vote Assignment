@@ -1,0 +1,115 @@
+[ec2-user@ip-172-31-8-146 ~]$ sudo su -
+Last login: Sun Jun 11 08:06:29 UTC 2023 on pts/0
+[root@ip-172-31-8-146 ~]# pwd
+/root
+[root@ip-172-31-8-146 ~]# ll
+total 4
+drwxr-xr-x  8 root root  335 Jun 11 08:11 example-voting-app
+drwxr-xr-x 20 root root 4096 Jun 11 08:11 kubernetes-training
+
+[root@ip-172-31-8-146 ~]# kubectl get pods
+NAME                      READY   STATUS    RESTARTS   AGE
+db-b54cd94f4-mtk5v        1/1     Running   0          18m
+ngnix-kalyan              1/1     Running   0          6d
+redis-868d64d78-qzmt9     1/1     Running   0          18m
+result-5d57b59f4b-9gslm   1/1     Running   0          18m
+worker-dd46d7584-ntqbf    1/1     Running   0          18m
+[root@ip-172-31-8-146 ~]# ll
+total 4
+drwxr-xr-x  8 root root  335 Jun 11 08:11 example-voting-app
+drwxr-xr-x 20 root root 4096 Jun 11 08:11 kubernetes-training
+[root@ip-172-31-8-146 ~]# cd example-voting-app
+[root@ip-172-31-8-146 example-voting-app]# ll
+total 96
+-rw-r--r-- 1 root root 54824 Jun 11 08:11 architecture.png
+-rw-r--r-- 1 root root   609 Jun 11 08:11 dockercloud.yml
+-rw-r--r-- 1 root root   808 Jun 11 08:11 docker-compose-javaworker.yml
+-rw-r--r-- 1 root root   400 Jun 11 08:11 docker-compose-simple.yml
+-rw-r--r-- 1 root root   808 Jun 11 08:11 docker-compose.yml
+-rw-r--r-- 1 root root  1692 Jun 11 08:11 docker-stack.yml
+drwxr-xr-x 2 root root   250 Jun 11 08:11 k8s-specifications
+-rw-r--r-- 1 root root 10758 Jun 11 08:11 LICENSE
+-rw-r--r-- 1 root root   185 Jun 11 08:11 MAINTAINERS
+-rw-r--r-- 1 root root  2182 Jun 11 08:11 README.md
+drwxr-xr-x 5 root root   133 Jun 11 08:11 result
+drwxr-xr-x 4 root root    93 Jun 11 08:11 vote
+drwxr-xr-x 3 root root    70 Jun 11 08:11 worker
+[root@ip-172-31-8-146 example-voting-app]# cd k8s-specifications
+[root@ip-172-31-8-146 k8s-specifications]# ll
+total 36
+-rw-r--r-- 1 root root 401 Jun 11 08:11 db-deployment.yaml
+-rw-r--r-- 1 root root 146 Jun 11 08:11 db-service.yaml
+-rw-r--r-- 1 root root 402 Jun 11 08:11 redis-deployment.yaml
+-rw-r--r-- 1 root root 152 Jun 11 08:11 redis-service.yaml
+-rw-r--r-- 1 root root 299 Jun 11 08:11 result-deployment.yaml
+-rw-r--r-- 1 root root 195 Jun 11 08:11 result-service.yaml
+-rw-r--r-- 1 root root 289 Jun 11 08:11 vote-deployment.yaml
+-rw-r--r-- 1 root root 192 Jun 11 08:11 vote-service.yaml
+-rw-r--r-- 1 root root 292 Jun 11 08:11 worker-deployment.yaml
+
+
+[root@ip-172-31-8-146 k8s-specifications]# kubectl get pods
+NAME                      READY   STATUS    RESTARTS   AGE
+db-b54cd94f4-mtk5v        1/1     Running   0          21m
+ngnix-kalyan              1/1     Running   0          6d
+redis-868d64d78-qzmt9     1/1     Running   0          21m
+result-5d57b59f4b-9gslm   1/1     Running   0          21m
+vote-94849dc97-wdnxn      1/1     Running   0          16s
+worker-dd46d7584-ntqbf    1/1     Running   0          21m
+
+
+[root@ip-172-31-8-146 k8s-specifications]# kubectl delete deploy vote
+deployment.apps "vote" deleted
+[root@ip-172-31-8-146 k8s-specifications]# kubectl get pods
+NAME                      READY   STATUS    RESTARTS   AGE
+db-b54cd94f4-mtk5v        1/1     Running   0          22m
+ngnix-kalyan              1/1     Running   0          6d
+redis-868d64d78-qzmt9     1/1     Running   0          22m
+result-5d57b59f4b-9gslm   1/1     Running   0          22m
+worker-dd46d7584-ntqbf    1/1     Running   0          22m
+
+## Observation1: Vote application was not working after deleting Vote POD but other pods were working fine.
+
+[root@ip-172-31-8-146 k8s-specifications]# kubectl delete deploy worker
+deployment.apps "worker" deleted
+
+
+## Observation2: Worker application was not working after deleting worker POD but other pods were working fine.
+
+
+[root@ip-172-31-8-146 k8s-specifications]# kubectl get pods
+NAME                      READY   STATUS    RESTARTS   AGE
+db-b54cd94f4-mtk5v        1/1     Running   0          22m
+ngnix-kalyan              1/1     Running   0          6d
+redis-868d64d78-qzmt9     1/1     Running   0          22m
+result-5d57b59f4b-9gslm   1/1     Running   0          22m
+
+[root@ip-172-31-8-146 k8s-specifications]# kubectl delete deploy db
+deployment.apps "db" deleted
+
+
+## Observation3: After deleting DB Pod it was observed that result pod restarted and result app stop working.
+
+Result App  stop working After Delete the db pod ? 
+ 
+ ## Observation4: All the  storing or retrieving data is no more present due to which result app stop Working 
+
+[root@ip-172-31-8-146 k8s-specifications]# kubectl get pods
+NAME                      READY   STATUS    RESTARTS   AGE
+ngnix-kalyan              1/1     Running   0          6d
+redis-868d64d78-qzmt9     1/1     Running   0          27m
+result-5d57b59f4b-9gslm   1/1     Running   1          27m
+
+[root@ip-172-31-8-146 k8s-specifications]# kubectl apply -f db-deployment.yaml
+deployment.apps/db created
+
+[root@ip-172-31-8-146 k8s-specifications]# kubectl apply -f worker-deployment.yaml
+deployment.apps/worker created
+[root@ip-172-31-8-146 k8s-specifications]# kubectl apply -f vote-deployment.yaml
+deployment.apps/vote created
+
+
+
+
+
+
