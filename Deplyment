@@ -1,0 +1,7 @@
+In deployment manifest update the image name.
+
+After that run the below command:-
+ kubectl apply -f deployment.yaml
+
+Kubernetes will create new pods with the new image, and then gradually replace the old pods with the new ones.
+Once the update is complete, all of the pods will be running the new image.
