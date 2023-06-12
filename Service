@@ -1,0 +1,4 @@
+ kubectl get service -o wide:- This command will show the node port that was assigned to the service as well as IP Address.
+Make sure that the firewall is not blocking traffic on the NodePort that was assigned to the service.
+Check the application logs to see if there are any errors that are being reported. 
+Restarting the application pod  may resolve any temporary issues that are preventing the application from being reachable. 
